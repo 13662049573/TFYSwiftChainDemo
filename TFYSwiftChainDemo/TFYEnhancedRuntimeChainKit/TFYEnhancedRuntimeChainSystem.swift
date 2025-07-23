@@ -57,7 +57,7 @@
 import Foundation
 import ObjectiveC
 
-#if os(iOS) || os(tvOS)
+#if os(iOS)
 import UIKit
 public typealias PlatformView = UIView
 public typealias PlatformViewController = UIViewController
@@ -95,7 +95,47 @@ public typealias PlatformLayoutConstraint = NSLayoutConstraint
 public typealias PlatformLayer = CALayer
 public typealias PlatformTimingFunction = CAMediaTimingFunction
 public typealias PlatformAttributedString = NSAttributedString
-#elseif os(macOS)
+#endif
+#if os(tvOS)
+import UIKit
+public typealias PlatformView = UIView
+public typealias PlatformViewController = UIViewController
+public typealias PlatformWindow = UIWindow
+public typealias PlatformColor = UIColor
+public typealias PlatformFont = UIFont
+public typealias PlatformImage = UIImage
+public typealias PlatformButton = UIButton
+public typealias PlatformLabel = UILabel
+public typealias PlatformImageView = UIImageView
+public typealias PlatformTextField = NSObject // tvOS 不支持 UITextField
+public typealias PlatformScrollView = UIScrollView
+public typealias PlatformStackView = UIStackView
+public typealias PlatformTextView = NSObject // tvOS 不支持 UITextView
+public typealias PlatformSlider = NSObject // tvOS 不支持 UISlider
+public typealias PlatformProgressView = UIProgressView
+public typealias PlatformSwitch = NSObject // tvOS 不支持 UISwitch
+public typealias PlatformSegmentedControl = UISegmentedControl
+public typealias PlatformGestureRecognizer = UIGestureRecognizer
+public typealias PlatformTapGestureRecognizer = UITapGestureRecognizer
+public typealias PlatformPanGestureRecognizer = UIPanGestureRecognizer
+public typealias PlatformAnimationOptions = UIView.AnimationOptions
+public typealias PlatformKeyframeAnimationOptions = UIView.KeyframeAnimationOptions
+public typealias PlatformEdgeInsets = UIEdgeInsets
+public typealias PlatformContentMode = UIView.ContentMode
+public typealias PlatformStackViewDistribution = UIStackView.Distribution
+public typealias PlatformStackViewAlignment = UIStackView.Alignment
+public typealias PlatformControlState = UIControl.State
+public typealias PlatformControlEvent = UIControl.Event
+public typealias PlatformControl = UIControl
+public typealias PlatformTextFieldBorderStyle = Int
+public typealias PlatformLayoutAxis = NSLayoutConstraint.Axis
+public typealias PlatformTextAlignment = NSTextAlignment
+public typealias PlatformLayoutConstraint = NSLayoutConstraint
+public typealias PlatformLayer = CALayer
+public typealias PlatformTimingFunction = CAMediaTimingFunction
+public typealias PlatformAttributedString = NSAttributedString
+#endif
+#if os(macOS)
 import AppKit
 public typealias PlatformView = NSView
 public typealias PlatformViewController = NSViewController
@@ -133,6 +173,10 @@ public typealias PlatformLayoutConstraint = NSLayoutConstraint
 public typealias PlatformLayer = CALayer
 public typealias PlatformTimingFunction = CAMediaTimingFunction
 public typealias PlatformAttributedString = NSAttributedString
+// NSEdgeInsets.zero 兼容
+extension NSEdgeInsets {
+    public static let zero = NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+}
 #endif
 
 // MARK: - 链式调用核心协议
@@ -1035,7 +1079,7 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     /// - Returns: 链式容器
     /// - Note: iOS使用UIView动画API，macOS使用NSAnimationContext，但接口统一
     @discardableResult
-    public func animate(duration: TimeInterval, options: PlatformAnimationOptions = [], animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animate(duration: TimeInterval, options: PlatformAnimationOptions = 0, animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS) || os(tvOS)
         // iOS/tvOS: 使用UIView动画系统
         UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
@@ -1065,7 +1109,7 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     /// - Returns: 链式容器
     /// - Note: iOS使用真正的弹簧动画，macOS使用缓动函数模拟
     @discardableResult
-    public func animateSpring(duration: TimeInterval, damping: CGFloat = 0.7, velocity: CGFloat = 0, options: PlatformAnimationOptions = [], animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animateSpring(duration: TimeInterval, damping: CGFloat = 0.7, velocity: CGFloat = 0, options: PlatformAnimationOptions = 0, animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS) || os(tvOS)
         // iOS/tvOS: 使用真正的弹簧动画系统
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
@@ -1093,7 +1137,7 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     ///   - completion: 完成回调
     /// - Returns: 链式容器
     @discardableResult
-    public func animateKeyframes(duration: TimeInterval, options: PlatformKeyframeAnimationOptions = [], animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animateKeyframes(duration: TimeInterval, options: PlatformKeyframeAnimationOptions = 0, animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS) || os(tvOS)
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: options, animations: {
             animations(self.base)
