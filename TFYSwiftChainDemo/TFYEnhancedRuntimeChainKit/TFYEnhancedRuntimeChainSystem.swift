@@ -21,7 +21,7 @@
 //      .set("text", "Hello")                  // ❌ 字符串方式，无自动补全
 //
 //  🎨 全面支持的跨平台组件（2024最新版）：
-//      📱 iOS/tvOS 组件：
+//      📱 iOS 组件：
 //      • 基础视图：PlatformView(.chain), PlatformLabel(.labelChain), PlatformImageView(.imageChain)
 //      • 输入控件：PlatformTextField(.textFieldChain), PlatformTextView(.textViewChain)
 //      • 按钮控件：PlatformButton(.buttonChain), PlatformSegmentedControl(.segmentChain)
@@ -89,45 +89,6 @@ public typealias PlatformControlState = UIControl.State
 public typealias PlatformControlEvent = UIControl.Event
 public typealias PlatformControl = UIControl
 public typealias PlatformTextFieldBorderStyle = UITextField.BorderStyle
-public typealias PlatformLayoutAxis = NSLayoutConstraint.Axis
-public typealias PlatformTextAlignment = NSTextAlignment
-public typealias PlatformLayoutConstraint = NSLayoutConstraint
-public typealias PlatformLayer = CALayer
-public typealias PlatformTimingFunction = CAMediaTimingFunction
-public typealias PlatformAttributedString = NSAttributedString
-#endif
-#if os(tvOS)
-import UIKit
-public typealias PlatformView = UIView
-public typealias PlatformViewController = UIViewController
-public typealias PlatformWindow = UIWindow
-public typealias PlatformColor = UIColor
-public typealias PlatformFont = UIFont
-public typealias PlatformImage = UIImage
-public typealias PlatformButton = UIButton
-public typealias PlatformLabel = UILabel
-public typealias PlatformImageView = UIImageView
-public typealias PlatformTextField = NSObject // tvOS 不支持 UITextField
-public typealias PlatformScrollView = UIScrollView
-public typealias PlatformStackView = UIStackView
-public typealias PlatformTextView = NSObject // tvOS 不支持 UITextView
-public typealias PlatformSlider = NSObject // tvOS 不支持 UISlider
-public typealias PlatformProgressView = UIProgressView
-public typealias PlatformSwitch = NSObject // tvOS 不支持 UISwitch
-public typealias PlatformSegmentedControl = UISegmentedControl
-public typealias PlatformGestureRecognizer = UIGestureRecognizer
-public typealias PlatformTapGestureRecognizer = UITapGestureRecognizer
-public typealias PlatformPanGestureRecognizer = UIPanGestureRecognizer
-public typealias PlatformAnimationOptions = UIView.AnimationOptions
-public typealias PlatformKeyframeAnimationOptions = UIView.KeyframeAnimationOptions
-public typealias PlatformEdgeInsets = UIEdgeInsets
-public typealias PlatformContentMode = UIView.ContentMode
-public typealias PlatformStackViewDistribution = UIStackView.Distribution
-public typealias PlatformStackViewAlignment = UIStackView.Alignment
-public typealias PlatformControlState = UIControl.State
-public typealias PlatformControlEvent = UIControl.Event
-public typealias PlatformControl = UIControl
-public typealias PlatformTextFieldBorderStyle = Int
 public typealias PlatformLayoutAxis = NSLayoutConstraint.Axis
 public typealias PlatformTextAlignment = NSTextAlignment
 public typealias PlatformLayoutConstraint = NSLayoutConstraint
@@ -533,7 +494,7 @@ public class TFYRuntimeUtils {
         }
         
         // 特殊处理layer属性（跨平台）
-        #if os(iOS) || os(tvOS)
+        #if os(iOS)
         if key.hasPrefix("layer.") && object is UIView {
             return true
         }
@@ -656,8 +617,8 @@ public class TFYRuntimeUtils {
             "totalCacheEntries": propertyCount + methodCount,
             "cacheEfficiency": propertyCount > 0 && methodCount > 0 ? "optimal" : "underutilized",
             "platform": {
-                #if os(iOS) || os(tvOS)
-                return "iOS/tvOS"
+                #if os(iOS)
+                return "iOS"
                 #elseif os(macOS)
                 return "macOS"
                 #else
@@ -1080,8 +1041,8 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     /// - Note: iOS使用UIView动画API，macOS使用NSAnimationContext，但接口统一
     @discardableResult
     public func animate(duration: TimeInterval, options: PlatformAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
-        #if os(iOS) || os(tvOS)
-        // iOS/tvOS: 使用UIView动画系统
+        #if os(iOS)
+        // iOS: 使用UIView动画系统
         UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
             animations(self.base)
         }, completion: completion)
@@ -1110,8 +1071,8 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     /// - Note: iOS使用真正的弹簧动画，macOS使用缓动函数模拟
     @discardableResult
     public func animateSpring(duration: TimeInterval, damping: CGFloat = 0.7, velocity: CGFloat = 0, options: PlatformAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
-        #if os(iOS) || os(tvOS)
-        // iOS/tvOS: 使用真正的弹簧动画系统
+        #if os(iOS)
+        // iOS: 使用真正的弹簧动画系统
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
             animations(self.base)
         }, completion: completion)
@@ -1138,7 +1099,7 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     /// - Returns: 链式容器
     @discardableResult
     public func animateKeyframes(duration: TimeInterval, options: PlatformKeyframeAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
-        #if os(iOS) || os(tvOS)
+        #if os(iOS)
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: options, animations: {
             animations(self.base)
         }, completion: completion)
@@ -1451,7 +1412,7 @@ extension TFYChain {
             switch propertyName {
             case "title":
                 if let title = value as? String {
-                    #if os(iOS) || os(tvOS)
+                    #if os(iOS)
                     button.setTitle(title, for: .normal)
                     #elseif os(macOS)
                     button.title = title
@@ -1462,7 +1423,7 @@ extension TFYChain {
                 // 类型不匹配，继续尝试KVC
             case "titleColor":
                 if let color = value as? PlatformColor {
-                    #if os(iOS) || os(tvOS)
+                    #if os(iOS)
                     button.setTitleColor(color, for: .normal)
                     #elseif os(macOS)
                     button.contentTintColor = color
@@ -1473,7 +1434,7 @@ extension TFYChain {
                 // 类型不匹配，继续尝试KVC
             case "image":
                 if let image = value as? PlatformImage {
-                    #if os(iOS) || os(tvOS)
+                    #if os(iOS)
                     button.setImage(image, for: .normal)
                     #elseif os(macOS)
                     button.image = image
@@ -1483,7 +1444,7 @@ extension TFYChain {
                 }
                 // 类型不匹配，继续尝试KVC
             case "backgroundImage":
-                #if os(iOS) || os(tvOS)
+                #if os(iOS)
                 if let image = value as? PlatformImage {
                     button.setBackgroundImage(image, for: .normal)
                     print("✅ PlatformButton backgroundImage设置成功")
@@ -1512,7 +1473,7 @@ extension TFYChain {
         // 平台标签文本属性
         if propertyName == "text", let text = value as? String {
             if let label = base as? PlatformLabel {
-                #if os(iOS) || os(tvOS)
+                #if os(iOS)
                 label.text = text
                 #elseif os(macOS)
                 label.stringValue = text
@@ -1525,7 +1486,7 @@ extension TFYChain {
         // 平台文本输入框文本属性
         if propertyName == "text", let text = value as? String {
             if let textField = base as? PlatformTextField {
-                #if os(iOS) || os(tvOS)
+                #if os(iOS)
                 textField.text = text
                 #elseif os(macOS)
                 textField.stringValue = text
@@ -1538,7 +1499,7 @@ extension TFYChain {
         // 平台文本视图文本属性
         if propertyName == "text", let text = value as? String {
             if let textView = base as? PlatformTextView {
-                #if os(iOS) || os(tvOS)
+                #if os(iOS)
                 textView.text = text
                 #elseif os(macOS)
                 textView.string = text
@@ -1551,7 +1512,7 @@ extension TFYChain {
         // 平台文本输入框 placeholder属性
         if propertyName == "placeholder", let placeholder = value as? String {
             if let textField = base as? PlatformTextField {
-                #if os(iOS) || os(tvOS)
+                #if os(iOS)
                 textField.placeholder = placeholder
                 #elseif os(macOS)
                 textField.placeholderString = placeholder
@@ -1566,14 +1527,14 @@ extension TFYChain {
             switch propertyName {
             case "axis":
                 if let axis = value as? PlatformLayoutAxis {
-                    #if os(iOS) || os(tvOS)
+                    #if os(iOS)
                     stackView.axis = axis
                     #elseif os(macOS)
                     stackView.orientation = axis
                     #endif
                     return true
                 } else if let rawValue = value as? Int, let axis = PlatformLayoutAxis(rawValue: rawValue) {
-                    #if os(iOS) || os(tvOS)
+                    #if os(iOS)
                     stackView.axis = axis
                     #elseif os(macOS)
                     stackView.orientation = axis
@@ -1610,7 +1571,7 @@ extension TFYChain {
         }
         
         // iOS 特有的活动指示器特殊属性
-        #if os(iOS) || os(tvOS)
+        #if os(iOS)
         if let activityIndicator = base as? UIActivityIndicatorView {
             switch propertyName {
             case "startAnimating":
@@ -1795,7 +1756,7 @@ extension TFYChain {
             return false
         }
         
-        #if os(iOS) || os(tvOS)
+        #if os(iOS)
         // iOS 需要控件事件参数
         guard args.count >= 3,
               let controlEvents = args[2] as? PlatformControlEvent else {
@@ -1820,7 +1781,7 @@ extension TFYChain {
             return false
         }
         
-        #if os(iOS) || os(tvOS)
+        #if os(iOS)
         let state = args.count >= 2 ? (args[1] as? PlatformControlState ?? .normal) : .normal
         button.setTitle(title, for: state)
         #elseif os(macOS)
@@ -1837,7 +1798,7 @@ extension TFYChain {
             return false
         }
         
-        #if os(iOS) || os(tvOS)
+        #if os(iOS)
         let state = args.count >= 2 ? (args[1] as? PlatformControlState ?? .normal) : .normal
         button.setTitleColor(color, for: state)
         #elseif os(macOS)
@@ -1854,7 +1815,7 @@ extension TFYChain {
             return false
         }
         
-        #if os(iOS) || os(tvOS)
+        #if os(iOS)
         let state = args.count >= 2 ? (args[1] as? PlatformControlState ?? .normal) : .normal
         button.setImage(image, for: state)
         #elseif os(macOS)
@@ -1864,7 +1825,7 @@ extension TFYChain {
     }
     
     private func handleSetBackgroundImage(args: [Any], chain: inout TFYChain<T>) -> Bool {
-        #if os(iOS) || os(tvOS)
+        #if os(iOS)
         guard args.count >= 1,
                let image = args[0] as? PlatformImage,
               let button = base as? PlatformButton else {
@@ -1890,7 +1851,7 @@ extension TFYChain {
         
         // 平台标签文本设置
         if let label = base as? PlatformLabel {
-            #if os(iOS) || os(tvOS)
+            #if os(iOS)
             label.text = text
             #elseif os(macOS)
             label.stringValue = text
@@ -1900,7 +1861,7 @@ extension TFYChain {
         
         // 平台文本输入框文本设置
         if let textField = base as? PlatformTextField {
-            #if os(iOS) || os(tvOS)
+            #if os(iOS)
             textField.text = text
             #elseif os(macOS)
             textField.stringValue = text
@@ -1910,7 +1871,7 @@ extension TFYChain {
         
         // 平台文本视图文本设置
         if let textView = base as? PlatformTextView {
-            #if os(iOS) || os(tvOS)
+            #if os(iOS)
             textView.text = text
             #elseif os(macOS)
             textView.string = text
@@ -1931,7 +1892,7 @@ extension TFYChain {
         
         // 平台标签文本颜色设置
         if let label = base as? PlatformLabel {
-            #if os(iOS) || os(tvOS)
+            #if os(iOS)
             label.textColor = color
             #elseif os(macOS)
             label.textColor = color
@@ -1982,7 +1943,7 @@ extension TFYChain {
         
         // 平台按钮字体设置
         if let button = base as? PlatformButton {
-            #if os(iOS) || os(tvOS)
+            #if os(iOS)
             button.titleLabel?.font = font
             #elseif os(macOS)
             // macOS 按钮字体设置需要通过 attributedTitle
@@ -2016,8 +1977,8 @@ extension TFYChain {
             return false
         }
         
-        #if os(iOS) || os(tvOS)
-        // iOS/tvOS: 处理 UIView 的 contentMode
+        #if os(iOS)
+        // iOS: 处理 UIView 的 contentMode
         guard let contentMode = args[0] as? PlatformContentMode,
               let view = base as? PlatformView else {
             chain.errors.append(.runtimeError("setContentMode 参数错误或对象不是 PlatformView"))
@@ -2340,7 +2301,7 @@ public extension PlatformView {
     var chain: TFYChain<PlatformView> { TFYChain(self) }
 }
 
-#if os(iOS) || os(tvOS)
+#if os(iOS)
 public extension UIControl {
     var controlChain: TFYChain<UIControl> { TFYChain(self) }
 }
@@ -2412,8 +2373,8 @@ public extension PlatformPanGestureRecognizer {
     var panGestureChain: TFYChain<PlatformPanGestureRecognizer> { TFYChain(self) }
 }
 
-// MARK: - iOS/tvOS 特有组件扩展
-#if os(iOS) || os(tvOS)
+// MARK: - iOS 特有组件扩展
+#if os(iOS)
 
 public extension UITableView {
     /// UITableView 类型安全链式容器
@@ -2431,7 +2392,7 @@ public extension UISwitch {
 }
 #endif
 
-// MARK: - iOS/tvOS 特定组件扩展（不在跨平台范围内的组件）
+// MARK: - iOS 特定组件扩展（不在跨平台范围内的组件）
 
 public extension UIActivityIndicatorView {
     /// UIActivityIndicatorView 类型安全链式容器

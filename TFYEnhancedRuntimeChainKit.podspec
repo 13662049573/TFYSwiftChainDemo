@@ -22,7 +22,6 @@ Pod::Spec.new do |spec|
   # 平台支持
   spec.ios.deployment_target = "15.0"
   spec.osx.deployment_target = "13.0"
-  spec.tvos.deployment_target = "13.0"
 
   # Swift支持
   spec.swift_version = "5.0"
