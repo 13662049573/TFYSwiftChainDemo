@@ -95,7 +95,6 @@ public typealias PlatformLayoutConstraint = NSLayoutConstraint
 public typealias PlatformLayer = CALayer
 public typealias PlatformTimingFunction = CAMediaTimingFunction
 public typealias PlatformAttributedString = NSAttributedString
-
 #elseif os(macOS)
 import AppKit
 public typealias PlatformView = NSView
@@ -123,7 +122,7 @@ public typealias PlatformKeyframeAnimationOptions = UInt // macOS 关键帧动�
 public typealias PlatformEdgeInsets = NSEdgeInsets
 public typealias PlatformContentMode = NSImageScaling // macOS 使用 NSImageScaling 作为内容模式
 public typealias PlatformStackViewDistribution = NSStackView.Distribution
-public typealias PlatformStackViewAlignment = NSLayoutAttribute // macOS 使用 NSLayoutAttribute
+public typealias PlatformStackViewAlignment = NSLayoutConstraint.Attribute // macOS 使用 NSLayoutConstraint.Attribute 代替已废弃的 NSLayoutAttribute
 public typealias PlatformControlState = UInt // macOS 不需要控件状态，使用 UInt 占位
 public typealias PlatformControlEvent = UInt // macOS 不需要控件事件，使用 UInt 占位
 public typealias PlatformControl = NSControl
@@ -134,13 +133,6 @@ public typealias PlatformLayoutConstraint = NSLayoutConstraint
 public typealias PlatformLayer = CALayer
 public typealias PlatformTimingFunction = CAMediaTimingFunction
 public typealias PlatformAttributedString = NSAttributedString
-
-// macOS NSEdgeInsets 扩展，添加便利初始化
-extension NSEdgeInsets {
-    public static var zero: NSEdgeInsets {
-        return NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-    }
-}
 #endif
 
 // MARK: - 链式调用核心协议
