@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
 
   spec.name         = "TFYEnhancedRuntimeChainKit"
 
-  spec.version      = "1.0.0"
+  spec.version      = "1.0.1"
 
   spec.summary      = "类型安全、跨平台的Swift链式编程系统，支持iOS/macOS/tvOS。"
 
@@ -29,6 +29,6 @@ Pod::Spec.new do |spec|
 
   spec.source       = { :git => "https://github.com/13662049573/TFYSwiftChainDemo.git", :tag => spec.version }
 
-  spec.source_files = "TFYEnhancedRuntimeChainKit/TFYEnhancedRuntimeChainSystem.swift"
+  spec.source_files = "TFYSwiftChainDemo/TFYEnhancedRuntimeChainKit/**/*.swift"
 
 end
