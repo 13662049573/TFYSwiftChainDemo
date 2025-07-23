@@ -29,8 +29,6 @@ Pod::Spec.new do |spec|
 
   spec.source       = { :git => "https://github.com/13662049573/TFYSwiftChainDemo.git", :tag => spec.version }
 
-  spec.source_files = "TFYSwiftChainDemo/TFYEnhancedRuntimeChainKit/TFYEnhancedRuntimeChainSystem.swift"
-
-  spec.exclude_files = "TFYSwiftChainDemo/TFYEnhancedRuntimeChainKit/Exclude"
+  spec.source_files = "TFYSwiftChainDemo/TFYEnhancedRuntimeChainKit/**/*.swift"
 
 end
