@@ -151,7 +151,7 @@ public protocol TFYChainErrorHandling {
     associatedtype ChainType
     var errors: [TFYChainError] { get set }
     func onError(_ handler: @escaping ([TFYChainError]) -> Void) -> ChainType
-    }
+}
     
 /// 性能监控协议
 public protocol TFYChainPerformanceMonitoring {
