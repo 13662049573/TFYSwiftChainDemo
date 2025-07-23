@@ -587,7 +587,7 @@ print("当前平台: \(stats["platform"] ?? "unknown")")  // 显示 iOS/tvOS 或
 
 ## 👥 **作者**
 
-- **AI Assistant** - *初始工作* - [GitHub](https://github.com/ai-assistant)
+- **AI Assistant** - *初始工作* - [GitHub](https://github.com/13662049573)
 
 ---
 

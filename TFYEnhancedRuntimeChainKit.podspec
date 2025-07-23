@@ -1,5 +1,4 @@
 
-
 Pod::Spec.new do |spec|
 
   spec.name         = "TFYEnhancedRuntimeChainKit"
@@ -18,7 +17,7 @@ Pod::Spec.new do |spec|
 
   spec.author       = { "田风有" => "420144542@qq.com" }
 
-  spec.social_media_url = "https://github.com/13662049573/TFYSwiftChainDemo"
+  spec.social_media_url = "https://github.com/13662049573"
 
   # 平台支持
   spec.ios.deployment_target = "15.0"
