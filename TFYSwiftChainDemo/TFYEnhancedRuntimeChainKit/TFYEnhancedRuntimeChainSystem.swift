@@ -2393,6 +2393,7 @@ public extension UISwitch {
 #endif
 
 // MARK: - iOS 特定组件扩展（不在跨平台范围内的组件）
+#if os(iOS)
 
 public extension UIActivityIndicatorView {
     /// UIActivityIndicatorView 类型安全链式容器
@@ -2464,6 +2465,8 @@ public extension UILongPressGestureRecognizer {
     /// UILongPressGestureRecognizer 类型安全链式容器
     var longPressGestureChain: TFYChain<UILongPressGestureRecognizer> { TFYChain(self) }
 }
+
+#endif
 
 // MARK: - 跨平台高级组件扩展
 
