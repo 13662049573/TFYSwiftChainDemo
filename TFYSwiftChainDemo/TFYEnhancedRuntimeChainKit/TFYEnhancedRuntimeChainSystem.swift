@@ -1040,7 +1040,7 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     /// - Returns: 链式容器
     /// - Note: iOS使用UIView动画API，macOS使用NSAnimationContext，但接口统一
     @discardableResult
-    public func animate(duration: TimeInterval, options: PlatformAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animate(duration: TimeInterval, options: PlatformAnimationOptions = [], animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS)
         // iOS: 使用UIView动画系统
         UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
@@ -1070,7 +1070,7 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     /// - Returns: 链式容器
     /// - Note: iOS使用真正的弹簧动画，macOS使用缓动函数模拟
     @discardableResult
-    public func animateSpring(duration: TimeInterval, damping: CGFloat = 0.7, velocity: CGFloat = 0, options: PlatformAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animateSpring(duration: TimeInterval, damping: CGFloat = 0.7, velocity: CGFloat = 0, options: PlatformAnimationOptions = [], animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS)
         // iOS: 使用真正的弹簧动画系统
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
@@ -1098,7 +1098,7 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     ///   - completion: 完成回调
     /// - Returns: 链式容器
     @discardableResult
-    public func animateKeyframes(duration: TimeInterval, options: PlatformKeyframeAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animateKeyframes(duration: TimeInterval, options: PlatformKeyframeAnimationOptions = [], animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS)
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: options, animations: {
             animations(self.base)
@@ -1947,7 +1947,8 @@ extension TFYChain {
             button.titleLabel?.font = font
             #elseif os(macOS)
             // macOS 按钮字体设置需要通过 attributedTitle
-            if let title = button.title {
+            let title = button.title as String?
+            if let title = title {
                 let attributes: [PlatformAttributedString.Key: Any] = [.font: font]
                 button.attributedTitle = PlatformAttributedString(string: title, attributes: attributes)
             }
