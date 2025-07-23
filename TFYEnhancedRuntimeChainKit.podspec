@@ -17,7 +17,7 @@ Pod::Spec.new do |spec|
   spec.license      = { :type => "MIT", :file => "LICENSE" }
 
   spec.author       = { "田风有" => "420144542@qq.com" }
-  
+
   spec.social_media_url = "https://github.com/13662049573/TFYSwiftChainDemo"
 
   # 平台支持
@@ -28,7 +28,6 @@ Pod::Spec.new do |spec|
   # Swift支持
   spec.swift_version = "5.0"
 
-  # 源码路径（假设主代码在TFYSwiftChainDemo/TFYSwiftChainDemo目录下）
   spec.source       = { :git => "https://github.com/13662049573/TFYSwiftChainDemo.git", :tag => spec.version }
 
   spec.source_files = "TFYSwiftChainDemo/TFYSwiftChainDemo/**/*.{swift}"
