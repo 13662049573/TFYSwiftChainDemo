@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
 
   spec.name         = "TFYEnhancedRuntimeChainKit"
 
-  spec.version      = "1.0.4"
+  spec.version      = "1.0.5"
 
   spec.summary      = "类型安全、跨平台的Swift链式编程系统，支持iOS/macOS。"
 

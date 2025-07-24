@@ -2152,18 +2152,13 @@ public extension NSObject {
 /// 链式调用便利方法
 public class TFYChainHelper {
     
+    // MARK: - 基础便利方法
+    
     /// 创建链式容器的便利方法
     /// - Parameter object: 目标对象
     /// - Returns: 链式容器
     public static func chain<T: NSObject>(_ object: T) -> TFYChain<T> {
         return TFYChain(object)
-    }
-    
-    /// 创建结构体链式容器的便利方法
-    /// - Parameter object: 目标对象
-    /// - Returns: 结构体链式容器
-    public static func structChain<T>(_ object: T) -> TFYStructChain<T> {
-        return TFYStructChain(object)
     }
     
     /// 批量链式操作
@@ -2176,29 +2171,6 @@ public class TFYChainHelper {
         }
     }
     
-    /// 批量设置属性（KeyPath版本）
-    /// - Parameters:
-    ///   - objects: 对象数组
-    ///   - keyPath: 属性KeyPath
-    ///   - value: 要设置的值
-    public static func batchSet<T: NSObject, Value>(_ objects: [T], _ keyPath: WritableKeyPath<T, Value>, to value: Value) {
-        for object in objects {
-            // 对于NSObject类型，使用链式调用来设置KeyPath属性
-            _ = TFYChain(object).setKeyPath(keyPath, value)
-        }
-    }
-    
-    /// 批量设置属性（字符串版本）
-    /// - Parameters:
-    ///   - objects: 对象数组
-    ///   - propertyName: 属性名
-    ///   - value: 要设置的值
-    public static func batchSet<T: NSObject>(_ objects: [T], _ propertyName: String, to value: Any) {
-        for object in objects {
-            _ = TFYRuntimeUtils.safeSetValue(value, forKey: propertyName, in: object)
-        }
-    }
-    
     /// 批量条件设置
     /// - Parameters:
     ///   - objects: 对象数组
@@ -2208,6 +2180,280 @@ public class TFYChainHelper {
         guard condition else { return }
         batchChain(objects, operation: operation)
     }
+    
+    // MARK: - 跨平台组件创建方法
+    
+    /// 创建并配置标签（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的标签
+    public static func createLabel(_ configurator: (TFYChain<PlatformLabel>) -> TFYChain<PlatformLabel>) -> PlatformLabel {
+        #if os(iOS)
+        let label = UILabel()
+        #elseif os(macOS)
+        let label = NSTextField()
+        label.isEditable = false
+        label.isSelectable = false
+        label.drawsBackground = true
+        #endif
+        
+        _ = configurator(label.labelChain)
+        return label
+    }
+    
+    /// 创建并配置按钮（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的按钮
+    public static func createButton(_ configurator: (TFYChain<PlatformButton>) -> TFYChain<PlatformButton>) -> PlatformButton {
+        #if os(iOS)
+        let button = UIButton(type: .system)
+        #elseif os(macOS)
+        let button = NSButton()
+        button.bezelStyle = .rounded
+        #endif
+        
+        _ = configurator(button.buttonChain)
+        return button
+    }
+    
+    /// 创建并配置图片视图（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的图片视图
+    public static func createImageView(_ configurator: (TFYChain<PlatformImageView>) -> TFYChain<PlatformImageView>) -> PlatformImageView {
+        #if os(iOS)
+        let imageView = UIImageView()
+        #elseif os(macOS)
+        let imageView = NSImageView()
+        #endif
+        
+        _ = configurator(imageView.imageChain)
+        return imageView
+    }
+    
+    /// 创建并配置文本输入框（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的文本输入框
+    public static func createTextField(_ configurator: (TFYChain<PlatformTextField>) -> TFYChain<PlatformTextField>) -> PlatformTextField {
+        #if os(iOS)
+        let textField = UITextField()
+        #elseif os(macOS)
+        let textField = NSTextField()
+        #endif
+        
+        _ = configurator(textField.textFieldChain)
+        return textField
+    }
+    
+    /// 创建并配置滚动视图（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的滚动视图
+    public static func createScrollView(_ configurator: (TFYChain<PlatformScrollView>) -> TFYChain<PlatformScrollView>) -> PlatformScrollView {
+        #if os(iOS)
+        let scrollView = UIScrollView()
+        #elseif os(macOS)
+        let scrollView = NSScrollView()
+        #endif
+        
+        _ = configurator(scrollView.scrollChain)
+        return scrollView
+    }
+    
+    /// 创建并配置堆栈视图（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的堆栈视图
+    public static func createStackView(_ configurator: (TFYChain<PlatformStackView>) -> TFYChain<PlatformStackView>) -> PlatformStackView {
+        #if os(iOS)
+        let stackView = UIStackView()
+        #elseif os(macOS)
+        let stackView = NSStackView()
+        #endif
+        
+        _ = configurator(stackView.stackChain)
+        return stackView
+    }
+    
+    // MARK: - 批量操作方法
+    
+    /// 批量设置相同属性
+    /// - Parameters:
+    ///   - objects: 对象数组
+    ///   - keyPath: 属性路径
+    ///   - value: 属性值
+    public static func batchSet<T: NSObject, V>(_ objects: [T], _ keyPath: WritableKeyPath<T, V>, to value: V) {
+        for object in objects {
+            _ = TFYChain(object).set(keyPath, to: value)
+        }
+    }
+    
+    /// 批量设置相同属性（字符串方式）
+    /// - Parameters:
+    ///   - objects: 对象数组
+    ///   - propertyName: 属性名
+    ///   - value: 属性值
+    public static func batchSet<T: NSObject>(_ objects: [T], _ propertyName: String, to value: Any) {
+        for object in objects {
+            _ = TFYRuntimeUtils.safeSetValue(value, forKey: propertyName, in: object)
+        }
+    }
+    
+    // MARK: - 结构体链式支持
+    
+    /// 结构体链式构建器
+    public struct StructChainBuilder<T> {
+        private var value: T
+        
+        public init(_ value: T) {
+            self.value = value
+        }
+        
+        /// 设置属性值
+        /// - Parameters:
+        ///   - keyPath: 属性路径
+        ///   - newValue: 新值
+        /// - Returns: 链式构建器
+        @discardableResult
+        public func set<V>(_ keyPath: WritableKeyPath<T, V>, _ newValue: V) -> StructChainBuilder<T> {
+            var newBuilder = self
+            newBuilder.value[keyPath: keyPath] = newValue
+            return newBuilder
+        }
+        
+        /// 条件设置属性值
+        /// - Parameters:
+        ///   - condition: 条件
+        ///   - keyPath: 属性路径
+        ///   - newValue: 新值
+        /// - Returns: 链式构建器
+        @discardableResult
+        public func setIf<V>(_ condition: Bool, _ keyPath: WritableKeyPath<T, V>, _ newValue: V) -> StructChainBuilder<T> {
+            var newBuilder = self
+            if condition {
+                newBuilder.value[keyPath: keyPath] = newValue
+            }
+            return newBuilder
+        }
+        
+        /// 构建最终结果
+        public var build: T {
+            return value
+        }
+    }
+    
+    /// 创建结构体链式构建器
+    /// - Parameter value: 初始值
+    /// - Returns: 链式构建器
+    public static func structChain<T>(_ value: T) -> StructChainBuilder<T> {
+        return StructChainBuilder(value)
+    }
+    
+    // MARK: - 跨平台便利方法
+    
+    /// 创建视图（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的视图
+    public static func createView(_ configurator: (TFYChain<PlatformView>) -> TFYChain<PlatformView>) -> PlatformView {
+        #if os(iOS)
+        let view = UIView()
+        #elseif os(macOS)
+        let view = NSView()
+        #endif
+        
+        _ = configurator(view.chain)
+        return view
+    }
+    
+    /// 创建滑块（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的滑块
+    public static func createSlider(_ configurator: (TFYChain<PlatformSlider>) -> TFYChain<PlatformSlider>) -> PlatformSlider {
+        #if os(iOS)
+        let slider = UISlider()
+        #elseif os(macOS)
+        let slider = NSSlider()
+        #endif
+        
+        _ = configurator(slider.sliderChain)
+        return slider
+    }
+    
+    /// 创建进度指示器（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的进度指示器
+    public static func createProgressView(_ configurator: (TFYChain<PlatformProgressView>) -> TFYChain<PlatformProgressView>) -> PlatformProgressView {
+        #if os(iOS)
+        let progressView = UIProgressView(progressViewStyle: .default)
+        #elseif os(macOS)
+        let progressView = NSProgressIndicator()
+        progressView.style = .bar
+        #endif
+        
+        _ = configurator(progressView.progressChain)
+        return progressView
+    }
+    
+    /// 创建分段控制器（跨平台）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的分段控制器
+    public static func createSegmentedControl(_ configurator: (TFYChain<PlatformSegmentedControl>) -> TFYChain<PlatformSegmentedControl>) -> PlatformSegmentedControl {
+        #if os(iOS)
+        let segmentedControl = UISegmentedControl()
+        #elseif os(macOS)
+        let segmentedControl = NSSegmentedControl()
+        #endif
+        
+        _ = configurator(segmentedControl.segmentChain)
+        return segmentedControl
+    }
+    
+    // MARK: - 平台特定创建方法
+    
+    #if os(iOS)
+    /// 创建开关（iOS特有）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的开关
+    public static func createSwitch(_ configurator: (TFYChain<UISwitch>) -> TFYChain<UISwitch>) -> UISwitch {
+        let switchControl = UISwitch()
+        _ = configurator(switchControl.switchChain)
+        return switchControl
+    }
+    
+    /// 创建活动指示器（iOS特有）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的活动指示器
+    public static func createActivityIndicator(_ configurator: (TFYChain<UIActivityIndicatorView>) -> TFYChain<UIActivityIndicatorView>) -> UIActivityIndicatorView {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        _ = configurator(activityIndicator.activityIndicatorChain)
+        return activityIndicator
+    }
+    #endif
+    
+    #if os(macOS)
+    /// 创建弹出按钮（macOS特有）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的弹出按钮
+    public static func createPopUpButton(_ configurator: (TFYChain<NSPopUpButton>) -> TFYChain<NSPopUpButton>) -> NSPopUpButton {
+        let popUpButton = NSPopUpButton()
+        _ = configurator(popUpButton.popUpButtonChain)
+        return popUpButton
+    }
+    
+    /// 创建颜色选择器（macOS特有）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的颜色选择器
+    public static func createColorWell(_ configurator: (TFYChain<NSColorWell>) -> TFYChain<NSColorWell>) -> NSColorWell {
+        let colorWell = NSColorWell()
+        _ = configurator(colorWell.colorWellChain)
+        return colorWell
+    }
+    
+    /// 创建等级指示器（macOS特有）
+    /// - Parameter configurator: 配置闭包
+    /// - Returns: 配置好的等级指示器
+    public static func createLevelIndicator(_ configurator: (TFYChain<NSLevelIndicator>) -> TFYChain<NSLevelIndicator>) -> NSLevelIndicator {
+        let levelIndicator = NSLevelIndicator()
+        _ = configurator(levelIndicator.levelIndicatorChain)
+        return levelIndicator
+    }
+    #endif
 }
 
 // MARK: - 性能优化
@@ -2228,17 +2474,13 @@ public struct TFYChainPerformanceConfig {
     }
 }
 
+// MARK: - 跨平台组件扩展
+
 /// 为跨平台组件提供统一的扩展
 public extension PlatformView {
     /// 平台视图链式容器（跨平台通用）
     var chain: TFYChain<PlatformView> { TFYChain(self) }
 }
-
-#if os(iOS)
-public extension UIControl {
-    var controlChain: TFYChain<UIControl> { TFYChain(self) }
-}
-#endif
 
 /// 为跨平台组件提供类型安全的便利方法
 public extension PlatformLabel {
@@ -2309,6 +2551,10 @@ public extension PlatformPanGestureRecognizer {
 // MARK: - iOS 特有组件扩展
 #if os(iOS)
 
+public extension UIControl {
+    var controlChain: TFYChain<UIControl> { TFYChain(self) }
+}
+
 public extension UITableView {
     /// UITableView 类型安全链式容器
     var tableChain: TFYChain<UITableView> { TFYChain(self) }
@@ -2323,6 +2569,78 @@ public extension UISwitch {
     /// UISwitch 类型安全链式容器
     var switchChain: TFYChain<UISwitch> { TFYChain(self) }
 }
+
+public extension UIActivityIndicatorView {
+    /// UIActivityIndicatorView 类型安全链式容器
+    var activityIndicatorChain: TFYChain<UIActivityIndicatorView> { TFYChain(self) }
+}
+
+public extension UIDatePicker {
+    /// UIDatePicker 类型安全链式容器
+    var datePickerChain: TFYChain<UIDatePicker> { TFYChain(self) }
+}
+
+public extension UIPickerView {
+    /// UIPickerView 类型安全链式容器
+    var pickerChain: TFYChain<UIPickerView> { TFYChain(self) }
+}
+
+public extension UINavigationBar {
+    /// UINavigationBar 类型安全链式容器
+    var navigationBarChain: TFYChain<UINavigationBar> { TFYChain(self) }
+}
+
+public extension UITabBar {
+    /// UITabBar 类型安全链式容器
+    var tabBarChain: TFYChain<UITabBar> { TFYChain(self) }
+}
+
+public extension UIToolbar {
+    /// UIToolbar 类型安全链式容器
+    var toolbarChain: TFYChain<UIToolbar> { TFYChain(self) }
+}
+
+public extension UISearchBar {
+    /// UISearchBar 类型安全链式容器
+    var searchBarChain: TFYChain<UISearchBar> { TFYChain(self) }
+}
+
+public extension UIPageControl {
+    /// UIPageControl 类型安全链式容器
+    var pageControlChain: TFYChain<UIPageControl> { TFYChain(self) }
+}
+
+public extension UIStepper {
+    /// UIStepper 类型安全链式容器
+    var stepperChain: TFYChain<UIStepper> { TFYChain(self) }
+}
+
+public extension UIVisualEffectView {
+    /// UIVisualEffectView 类型安全链式容器
+    var visualEffectChain: TFYChain<UIVisualEffectView> { TFYChain(self) }
+}
+
+// iOS 特有手势识别器扩展
+public extension UIPinchGestureRecognizer {
+    /// UIPinchGestureRecognizer 类型安全链式容器
+    var pinchGestureChain: TFYChain<UIPinchGestureRecognizer> { TFYChain(self) }
+}
+
+public extension UIRotationGestureRecognizer {
+    /// UIRotationGestureRecognizer 类型安全链式容器
+    var rotationGestureChain: TFYChain<UIRotationGestureRecognizer> { TFYChain(self) }
+}
+
+public extension UISwipeGestureRecognizer {
+    /// UISwipeGestureRecognizer 类型安全链式容器
+    var swipeGestureChain: TFYChain<UISwipeGestureRecognizer> { TFYChain(self) }
+}
+
+public extension UILongPressGestureRecognizer {
+    /// UILongPressGestureRecognizer 类型安全链式容器
+    var longPressGestureChain: TFYChain<UILongPressGestureRecognizer> { TFYChain(self) }
+}
+
 #endif
 
 // MARK: - 跨平台高级组件扩展
