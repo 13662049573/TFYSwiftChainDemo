@@ -3,12 +3,12 @@ Pod::Spec.new do |spec|
 
   spec.name         = "TFYEnhancedRuntimeChainKit"
 
-  spec.version      = "1.0.3"
+  spec.version      = "1.0.4"
 
-  spec.summary      = "类型安全、跨平台的Swift链式编程系统，支持iOS/macOS/tvOS。"
+  spec.summary      = "类型安全、跨平台的Swift链式编程系统，支持iOS/macOS。"
 
   spec.description  = <<-DESC
-    TFYEnhancedRuntimeChainKit 是一个革命性的Swift链式编程框架，支持类型安全的KeyPath自动补全、智能LRU缓存、跨平台动画与约束、性能监控、错误恢复等特性。API完全统一，极大提升iOS、macOS、tvOS开发效率。
+    TFYEnhancedRuntimeChainKit 是一个革命性的Swift链式编程框架，支持类型安全的KeyPath自动补全、智能LRU缓存、跨平台动画与约束、性能监控、错误恢复等特性。API完全统一，极大提升iOS、macOS开发效率。
   DESC
 
   spec.homepage     = "https://github.com/13662049573/TFYSwiftChainDemo"
