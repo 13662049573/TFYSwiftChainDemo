@@ -1,13 +1,12 @@
 # 🚀 TFYEnhancedRuntimeChainSystem
 
 [![Swift 5.0+](https://img.shields.io/badge/Swift-5.0+-orange.svg)](https://swift.org)
-[![iOS 15.0+](https://img.shields.io/badge/iOS-13.0+-blue.svg)](https://developer.apple.com/ios/)
-[![macOS 10.15+](https://img.shields.io/badge/macOS-10.15+-green.svg)](https://developer.apple.com/macos/)
-[![tvOS 13.0+](https://img.shields.io/badge/tvOS-13.0+-purple.svg)](https://developer.apple.com/tvos/)
+[![iOS 15.0+](https://img.shields.io/badge/iOS-15.0+-blue.svg)](https://developer.apple.com/ios/)
+[![macOS 13.0+](https://img.shields.io/badge/macOS-13.0+-green.svg)](https://developer.apple.com/macos/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 
-> **革命性的跨平台链式编程框架** - 支持 iOS、macOS、tvOS，让你的代码更简洁、更安全、更高效！
+> **革命性的跨平台链式编程框架** - 支持 iOS、macOS，让你的代码更简洁、更安全、更高效！
 
 ## ✨ 核心特性
 
@@ -69,7 +68,7 @@ label.labelChain
 
 ## 🎪 **支持的跨平台组件全家桶**
 
-### 📱 **iOS/tvOS 组件**
+### 📱 **iOS 组件**
 
 | 🏗️ **基础组件** | 📝 **输入组件** | 🎛️ **控制组件** | 📊 **显示组件** |
 |---|---|---|---|
@@ -98,7 +97,7 @@ label.labelChain
 | `NSScrollView(.nsScrollViewChain)` | `NSClickGestureRecognizer(.clickGestureChain)` | `NSViewController(.nsViewControllerChain)` |
 | `NSTableView(.nsTableViewChain)` | `NSPanGestureRecognizer(.nsPanGestureChain)` | `NSWindow(.nsWindowChain)` |
 | `NSOutlineView(.outlineViewChain)` | `NSMagnificationGestureRecognizer(.magnificationGestureChain)` | `NSWindowController(.windowControllerChain)` |
-| `NSSplitView(.splitViewChain)` | `NSRotationGestureRecognizer(.nsRotationGestureChain)` | `NSVisualEffectView(.nsVisualEffectViewChain)` |
+| `NSSplitView(.splitViewChain)` | `NSRotationGestureRecognizer(.nsRotationGestureRecognizer)` | `NSVisualEffectView(.nsVisualEffectViewChain)` |
 
 ---
 
@@ -158,7 +157,7 @@ class ViewController: NSViewController {
 
 #### 🌐 **跨平台通用版本**
 ```swift
-#if os(iOS) || os(tvOS)
+#if os(iOS)
 import UIKit
 #elseif os(macOS)
 import AppKit
@@ -491,10 +490,10 @@ windowController.windowControllerChain
 > **平台统一说明：**
 >
 > - 所有基础控件（如NSView、NSTextField、NSButton、NSImageView、NSScrollView、NSTextView、NSSlider、NSProgressIndicator、NSSegmentedControl、NSStackView、NSViewController、NSWindow等）已通过Platform别名（如PlatformView、PlatformLabel、PlatformButton等）统一扩展，无需单独nsXXXChain扩展。
-> - 你可以直接使用 `label.chain`、`button.buttonChain`、`imageView.imageChain`、`textField.textFieldChain` 等统一API，无论iOS、macOS、tvOS，全部一致。
+> - 你可以直接使用 `label.chain`、`button.buttonChain`、`imageView.imageChain`、`textField.textFieldChain` 等统一API，无论iOS、macOS，全部一致。
 > - 只有macOS独有组件（如NSPopUpButton、NSComboBox、NSColorWell、NSDatePicker、NSLevelIndicator、NSPathControl、NSSearchField、NSSecureTextField、NSTableView、NSOutlineView、NSCollectionView、NSBox、NSTabView、NSSplitView、NSVisualEffectView、NSWindowController、NSClickGestureRecognizer、NSMagnificationGestureRecognizer、NSRotationGestureRecognizer、NSPressGestureRecognizer等）才有专属的nsXXXChain扩展。
 
-### 🏗️ macOS基础控件链式用法（与iOS/tvOS完全统一）
+### 🏗️ macOS基础控件链式用法（与iOS完全统一）
 
 | 组件类型         | 推荐链式用法                  | 说明           |
 |----------------|------------------------------|----------------|
@@ -511,7 +510,7 @@ windowController.windowControllerChain
 | NSViewController | `controller.viewControllerChain` | PlatformViewController |
 | NSWindow       | `window.windowChain`         | PlatformWindow  |
 
-> **说明：** 以上所有基础控件链式用法在iOS、macOS、tvOS完全一致，开发者只需记忆一套API，极大提升跨平台开发效率。
+> **说明：** 以上所有基础控件链式用法在iOS、macOS完全一致，开发者只需记忆一套API，极大提升跨平台开发效率。
 
 ### 🖥️ macOS独有组件链式用法
 
@@ -554,7 +553,7 @@ TFYChainPerformanceConfig.cacheEnabled = true              // 启用缓存
 // 获取跨平台缓存统计
 let stats = TFYRuntimeUtils.getDetailedCacheStats()
 print("缓存效率: \(stats["cacheEfficiency"] ?? "unknown")")
-print("当前平台: \(stats["platform"] ?? "unknown")")  // 显示 iOS/tvOS 或 macOS
+print("当前平台: \(stats["platform"] ?? "unknown")")  // 显示 iOS 或 macOS
 ```
 
 ---
