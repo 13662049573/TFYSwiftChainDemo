@@ -1032,15 +1032,14 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     // MARK: - 动画链式支持
     
     /// 跨平台动画执行
-    /// - Parameters:
-    ///   - duration: 动画时长
-    ///   - options: 动画选项 (在macOS上被忽略，使用默认动画设置)
-    ///   - animations: 动画闭包
-    ///   - completion: 完成回调
-    /// - Returns: 链式容器
-    /// - Note: iOS使用UIView动画API，macOS使用NSAnimationContext，但接口统一
     @discardableResult
-    public func animate(duration: TimeInterval, options: PlatformAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animate(duration: TimeInterval, options: PlatformAnimationOptions = {
+        #if os(iOS)
+        return []
+        #elseif os(macOS)
+        return 0
+        #endif
+    }(), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS)
         // iOS: 使用UIView动画系统
         UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
@@ -1060,17 +1059,14 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     }
     
     /// 跨平台弹簧动画执行
-    /// - Parameters:
-    ///   - duration: 动画时长  
-    ///   - damping: 阻尼比 (在macOS上被忽略，使用easeInEaseOut时间函数)
-    ///   - velocity: 初始速度 (在macOS上被忽略)
-    ///   - options: 动画选项 (在macOS上被忽略)
-    ///   - animations: 动画闭包
-    ///   - completion: 完成回调
-    /// - Returns: 链式容器
-    /// - Note: iOS使用真正的弹簧动画，macOS使用缓动函数模拟
     @discardableResult
-    public func animateSpring(duration: TimeInterval, damping: CGFloat = 0.7, velocity: CGFloat = 0, options: PlatformAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animateSpring(duration: TimeInterval, damping: CGFloat = 0.7, velocity: CGFloat = 0, options: PlatformAnimationOptions = {
+        #if os(iOS)
+        return []
+        #elseif os(macOS)
+        return 0
+        #endif
+    }(), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS)
         // iOS: 使用真正的弹簧动画系统
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
@@ -1091,14 +1087,14 @@ public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling
     }
     
     /// 关键帧动画执行
-    /// - Parameters:
-    ///   - duration: 动画时长
-    ///   - options: 动画选项
-    ///   - animations: 动画闭包
-    ///   - completion: 完成回调
-    /// - Returns: 链式容器
     @discardableResult
-    public func animateKeyframes(duration: TimeInterval, options: PlatformKeyframeAnimationOptions = .init(rawValue: 0), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
+    public func animateKeyframes(duration: TimeInterval, options: PlatformKeyframeAnimationOptions = {
+        #if os(iOS)
+        return []
+        #elseif os(macOS)
+        return 0
+        #endif
+    }(), animations: @escaping (T) -> Void, completion: ((Bool) -> Void)? = nil) -> TFYChain<T> {
         #if os(iOS)
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: options, animations: {
             animations(self.base)
