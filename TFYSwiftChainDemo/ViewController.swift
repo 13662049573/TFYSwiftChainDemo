@@ -636,6 +636,13 @@ class ViewController: UIViewController {
         structDemoLabel.text = newConfig.title
         structDemoLabel.textColor = newConfig.color
         structDemoLabel.font = .systemFont(ofSize: newConfig.fontSize)
+        
+        
+        ZSSensorsAnalyBuilder()
+            .chain
+            .set(\.e_VIP_level, "")
+            .set(\.event_duration, 1)
+        
     }
     
     // MARK: - 点击空白收起键盘
