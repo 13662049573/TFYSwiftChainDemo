@@ -59,6 +59,8 @@ import ObjectiveC
 
 #if os(iOS)
 import UIKit
+
+// MARK: - iOS 平台类型别名（优化版）
 public typealias PlatformView = UIView
 public typealias PlatformViewController = UIViewController
 public typealias PlatformWindow = UIWindow
@@ -98,6 +100,8 @@ public typealias PlatformAttributedString = NSAttributedString
 #endif
 #if os(macOS)
 import AppKit
+
+// MARK: - macOS 平台类型别名（优化版）
 public typealias PlatformView = NSView
 public typealias PlatformViewController = NSViewController
 public typealias PlatformWindow = NSWindow
@@ -134,13 +138,14 @@ public typealias PlatformLayoutConstraint = NSLayoutConstraint
 public typealias PlatformLayer = CALayer
 public typealias PlatformTimingFunction = CAMediaTimingFunction
 public typealias PlatformAttributedString = NSAttributedString
-// NSEdgeInsets.zero 兼容
+
+// MARK: - macOS 平台兼容性扩展
 extension NSEdgeInsets {
     public static let zero = NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 }
 #endif
 
-// MARK: - 链式调用核心协议
+// MARK: - 链式调用核心协议（优化版）
 
 /// 链式调用核心协议
 public protocol TFYChainableProtocol {
@@ -178,7 +183,7 @@ public protocol TFYChainAdvancedFeatures {
     func when(_ condition: Bool, _ block: (BaseType) -> Void) -> ChainType
 }
 
-// MARK: - 链式调用错误类型
+// MARK: - 链式调用错误类型（优化版）
 
 /// 链式调用错误枚举
 public enum TFYChainError: Error, CustomStringConvertible {
@@ -207,7 +212,7 @@ public enum TFYChainError: Error, CustomStringConvertible {
         case .runtimeError(let error):
             return "运行时错误: \(error)"
         case .performanceWarning(let operation, let time):
-            return "性能警告: \(operation) 耗时 \(time)ms"
+            return "性能警告: \(operation) 耗时 \(String(format: "%.3f", time * 1000))ms"
         case .memoryWarning(let details):
             return "内存警告: \(details)"
         case .threadSafetyViolation(let details):
@@ -254,7 +259,7 @@ public enum ErrorSeverity: Int, CaseIterable {
 // MARK: - 运行时工具类（优化版）
 
 /// 优化的运行时工具类
-public class TFYRuntimeUtils {
+public final class TFYRuntimeUtils {
     
     /// LRU缓存节点
     private class CacheNode {
@@ -271,9 +276,9 @@ public class TFYRuntimeUtils {
         }
     }
     
-    /// LRU缓存管理器
-    private class LRUCache {
-        private var capacity: Int
+    /// LRU缓存管理器（优化版）
+    private final class LRUCache {
+        private let capacity: Int
         private var cache: [String: CacheNode] = [:]
         private var head: CacheNode?
         private var tail: CacheNode?
@@ -369,7 +374,7 @@ public class TFYRuntimeUtils {
     private static let methodLRUCache = LRUCache(capacity: TFYChainPerformanceConfig.maxCacheSize)
     private static let methodCacheQueue = DispatchQueue(label: "com.tfychain.methodCache", attributes: .concurrent)
     
-    /// 检查属性是否存在（修复版本 - 线程安全 + LRU缓存）
+    /// 检查属性是否存在（优化版 - 线程安全 + LRU缓存）
     /// - Parameters:
     ///   - propertyName: 属性名
     ///   - object: 目标对象
@@ -393,7 +398,7 @@ public class TFYRuntimeUtils {
         }
     }
     
-    /// 检查方法是否存在（线程安全版本 + LRU缓存）
+    /// 检查方法是否存在（优化版 - 线程安全 + LRU缓存）
     /// - Parameters:
     ///   - methodName: 方法名
     ///   - object: 目标对象
@@ -458,7 +463,7 @@ public class TFYRuntimeUtils {
         return methodNames
     }
     
-    /// 安全的 KVC 设置（可靠修复版本 - 先检查后设置）
+    /// 安全的 KVC 设置（优化版 - 先检查后设置）
     /// - Parameters:
     ///   - object: 目标对象
     ///   - key: 键名
@@ -471,7 +476,9 @@ public class TFYRuntimeUtils {
             object.setValue(value, forKey: key)
             return true
         } else {
+            #if DEBUG
             print("TFYRuntimeUtils: 属性 '\(key)' 不支持KVC，跳过设置。对象类型: \(type(of: object))")
+            #endif
             return false
         }
     }
@@ -570,14 +577,16 @@ public class TFYRuntimeUtils {
     
 
     
-    /// 安全的 KVC 获取
+    /// 安全的 KVC 获取（优化版）
     /// - Parameters:
     ///   - object: 目标对象
     ///   - key: 键名
     /// - Returns: 获取的值
     public static func safeGetValue(forKey key: String, in object: NSObject) -> Any? {
         guard hasProperty(key, in: object) else {
+            #if DEBUG
             print("TFYRuntimeUtils: 属性 '\(key)' 不存在于对象 \(type(of: object))")
+            #endif
             return nil
         }
         
@@ -585,7 +594,7 @@ public class TFYRuntimeUtils {
         return object.value(forKey: key)
     }
     
-    /// 清空缓存（线程安全）
+    /// 清空缓存（优化版 - 线程安全）
     public static func clearCache() {
         propertyCacheQueue.sync {
             propertyLRUCache.clear()
@@ -629,7 +638,7 @@ public class TFYRuntimeUtils {
     }
 }
 
-// MARK: - 通用链式容器
+// MARK: - 通用链式容器（优化版）
 
 /// 通用链式容器，支持 NSObject 类型
 public struct TFYChain<T: NSObject>: TFYChainableProtocol, TFYChainErrorHandling, TFYChainPerformanceMonitoring, TFYChainAdvancedFeatures {
@@ -2131,28 +2140,28 @@ public struct TFYStructChain<T>: TFYChainableProtocol, TFYChainErrorHandling, TF
     }
 }
 
-// MARK: - 扩展支持
+// MARK: - 扩展支持（优化版）
 
 /// UIKit 组件链式调用扩展
 public extension NSObject {
     /// 通用链式容器
-    func tfy() -> TFYChain<NSObject> {return TFYChain(self)}
+    func tfy() -> TFYChain<NSObject> { return TFYChain(self) }
     
     /// 启用调试的链式容器
-    func tfyDebug() -> TFYChain<NSObject> {return TFYChain(self, enableDebug: true)}
+    func tfyDebug() -> TFYChain<NSObject> { return TFYChain(self, enableDebug: true) }
     
     /// 启用性能监控的链式容器
-    func tfyPerformance() -> TFYChain<NSObject> {return TFYChain(self, enablePerformanceMonitoring: true)}
+    func tfyPerformance() -> TFYChain<NSObject> { return TFYChain(self, enablePerformanceMonitoring: true) }
     
     /// 启用所有功能的链式容器
-    func tfyFull() -> TFYChain<NSObject> {return TFYChain(self, enablePerformanceMonitoring: true, enableDebug: true)}
+    func tfyFull() -> TFYChain<NSObject> { return TFYChain(self, enablePerformanceMonitoring: true, enableDebug: true) }
 }
-// MARK: - 便利方法
+// MARK: - 便利方法（优化版）
 
 /// 链式调用便利方法
-public class TFYChainHelper {
+public final class TFYChainHelper {
     
-    // MARK: - 基础便利方法
+    // MARK: - 基础便利方法（优化版）
     
     /// 创建链式容器的便利方法
     /// - Parameter object: 目标对象
@@ -2181,7 +2190,7 @@ public class TFYChainHelper {
         batchChain(objects, operation: operation)
     }
     
-    // MARK: - 跨平台组件创建方法
+    // MARK: - 跨平台组件创建方法（优化版）
     
     /// 创建并配置标签（跨平台）
     /// - Parameter configurator: 配置闭包
@@ -2456,7 +2465,8 @@ public class TFYChainHelper {
     #endif
 }
 
-// MARK: - 性能优化
+// MARK: - 性能优化配置（优化版）
+
 /// 性能优化配置
 public struct TFYChainPerformanceConfig {
     /// 是否启用缓存
@@ -2468,13 +2478,24 @@ public struct TFYChainPerformanceConfig {
     /// 性能警告阈值（毫秒）
     public static var performanceWarningThreshold: TimeInterval = 1.0
     
+    /// 是否启用调试输出
+    public static var debugEnabled: Bool = false
+    
     /// 清理缓存
     public static func clearAllCaches() {
         TFYRuntimeUtils.clearCache()
     }
+    
+    /// 重置所有配置到默认值
+    public static func resetToDefaults() {
+        cacheEnabled = true
+        maxCacheSize = 1000
+        performanceWarningThreshold = 1.0
+        debugEnabled = false
+    }
 }
 
-// MARK: - 跨平台组件扩展
+// MARK: - 跨平台组件扩展（优化版）
 
 /// 为跨平台组件提供统一的扩展
 public extension PlatformView {
@@ -2482,7 +2503,7 @@ public extension PlatformView {
     var chain: TFYChain<PlatformView> { TFYChain(self) }
 }
 
-/// 为跨平台组件提供类型安全的便利方法
+/// 为跨平台组件提供类型安全的便利方法（优化版）
 public extension PlatformLabel {
     /// 平台标签类型安全链式容器（跨平台）
     var labelChain: TFYChain<PlatformLabel> { TFYChain(self) }
@@ -2548,7 +2569,7 @@ public extension PlatformPanGestureRecognizer {
     var panGestureChain: TFYChain<PlatformPanGestureRecognizer> { TFYChain(self) }
 }
 
-// MARK: - iOS 特有组件扩展
+// MARK: - iOS 特有组件扩展（优化版）
 #if os(iOS)
 
 public extension UIControl {
@@ -2643,7 +2664,7 @@ public extension UILongPressGestureRecognizer {
 
 #endif
 
-// MARK: - 跨平台高级组件扩展
+// MARK: - 跨平台高级组件扩展（优化版）
 
 public extension PlatformViewController {
     /// 平台视图控制器类型安全链式容器（跨平台）
@@ -2660,7 +2681,7 @@ public extension PlatformLayer {
     var layerChain: TFYChain<PlatformLayer> { TFYChain(self) }
 }
 
-// MARK: - macOS 平台特有组件扩展
+// MARK: - macOS 平台特有组件扩展（优化版）
 
 #if os(macOS)
 
