@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
 
   spec.name         = "TFYEnhancedRuntimeChainKit"
 
-  spec.version      = "1.0.6"
+  spec.version      = "1.1.0"
 
   spec.summary      = "类型安全、跨平台的Swift链式编程系统，支持iOS/macOS。"
 
@@ -20,7 +20,7 @@ Pod::Spec.new do |spec|
   spec.social_media_url = "https://github.com/13662049573"
 
   # 平台支持
-  spec.ios.deployment_target = "15.0"
+  spec.ios.deployment_target = "16.0"
   spec.osx.deployment_target = "13.0"
 
   # Swift支持

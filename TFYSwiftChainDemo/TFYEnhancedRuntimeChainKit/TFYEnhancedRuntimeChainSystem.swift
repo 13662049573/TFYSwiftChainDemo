@@ -97,6 +97,59 @@ public typealias PlatformLayoutConstraint = NSLayoutConstraint
 public typealias PlatformLayer = CALayer
 public typealias PlatformTimingFunction = CAMediaTimingFunction
 public typealias PlatformAttributedString = NSAttributedString
+
+// MARK: - iOS 16+ UIKit helpers
+
+private enum TFYIOSButtonConfiguration {
+    static func ensuredConfiguration(for button: UIButton) -> UIButton.Configuration {
+        if let configuration = button.configuration {
+            return configuration
+        }
+        let configuration = UIButton.Configuration.plain()
+        button.configuration = configuration
+        return configuration
+    }
+
+    static func applyTitle(_ title: String, to button: UIButton, state: UIControl.State) {
+        guard state == .normal else {
+            button.setTitle(title, for: state)
+            return
+        }
+        var configuration = ensuredConfiguration(for: button)
+        configuration.title = title
+        button.configuration = configuration
+    }
+
+    static func applyTitleColor(_ color: UIColor, to button: UIButton, state: UIControl.State) {
+        guard state == .normal else {
+            button.setTitleColor(color, for: state)
+            return
+        }
+        var configuration = ensuredConfiguration(for: button)
+        configuration.baseForegroundColor = color
+        button.configuration = configuration
+    }
+
+    static func applyImage(_ image: UIImage, to button: UIButton, state: UIControl.State) {
+        guard state == .normal else {
+            button.setImage(image, for: state)
+            return
+        }
+        var configuration = ensuredConfiguration(for: button)
+        configuration.image = image
+        button.configuration = configuration
+    }
+
+    static func applyBackgroundImage(_ image: UIImage, to button: UIButton, state: UIControl.State) {
+        guard state == .normal else {
+            button.setBackgroundImage(image, for: state)
+            return
+        }
+        var configuration = ensuredConfiguration(for: button)
+        configuration.background.image = image
+        button.configuration = configuration
+    }
+}
 #endif
 #if os(macOS)
 import AppKit
@@ -1418,7 +1471,7 @@ extension TFYChain {
             case "title":
                 if let title = value as? String {
                     #if os(iOS)
-                    button.setTitle(title, for: .normal)
+                    TFYIOSButtonConfiguration.applyTitle(title, to: button, state: .normal)
                     #elseif os(macOS)
                     button.title = title
                     #endif
@@ -1429,7 +1482,7 @@ extension TFYChain {
             case "titleColor":
                 if let color = value as? PlatformColor {
                     #if os(iOS)
-                    button.setTitleColor(color, for: .normal)
+                    TFYIOSButtonConfiguration.applyTitleColor(color, to: button, state: .normal)
                     #elseif os(macOS)
                     button.contentTintColor = color
                     #endif
@@ -1440,7 +1493,7 @@ extension TFYChain {
             case "image":
                 if let image = value as? PlatformImage {
                     #if os(iOS)
-                    button.setImage(image, for: .normal)
+                    TFYIOSButtonConfiguration.applyImage(image, to: button, state: .normal)
                     #elseif os(macOS)
                     button.image = image
                     #endif
@@ -1451,7 +1504,7 @@ extension TFYChain {
             case "backgroundImage":
                 #if os(iOS)
                 if let image = value as? PlatformImage {
-                    button.setBackgroundImage(image, for: .normal)
+                    TFYIOSButtonConfiguration.applyBackgroundImage(image, to: button, state: .normal)
                     print("✅ PlatformButton backgroundImage设置成功")
                     return true
                 }
@@ -1724,7 +1777,7 @@ extension TFYChain {
         
         #if os(iOS)
         let state = args.count >= 2 ? (args[1] as? PlatformControlState ?? .normal) : .normal
-        button.setTitle(title, for: state)
+        TFYIOSButtonConfiguration.applyTitle(title, to: button, state: state)
         #elseif os(macOS)
         button.title = title
         #endif
@@ -1741,7 +1794,7 @@ extension TFYChain {
         
         #if os(iOS)
         let state = args.count >= 2 ? (args[1] as? PlatformControlState ?? .normal) : .normal
-        button.setTitleColor(color, for: state)
+        TFYIOSButtonConfiguration.applyTitleColor(color, to: button, state: state)
         #elseif os(macOS)
         button.contentTintColor = color
         #endif
@@ -1758,7 +1811,7 @@ extension TFYChain {
         
         #if os(iOS)
         let state = args.count >= 2 ? (args[1] as? PlatformControlState ?? .normal) : .normal
-        button.setImage(image, for: state)
+        TFYIOSButtonConfiguration.applyImage(image, to: button, state: state)
         #elseif os(macOS)
         button.image = image
         #endif
@@ -1775,7 +1828,7 @@ extension TFYChain {
         }
         
         let state = args.count >= 2 ? (args[1] as? PlatformControlState ?? .normal) : .normal
-        button.setBackgroundImage(image, for: state)
+        TFYIOSButtonConfiguration.applyBackgroundImage(image, to: button, state: state)
         return true
         #elseif os(macOS)
         chain.errors.append(.runtimeError("setBackgroundImage 在 macOS 上不受支持"))
@@ -2214,7 +2267,7 @@ public final class TFYChainHelper {
     /// - Returns: 配置好的按钮
     public static func createButton(_ configurator: (TFYChain<PlatformButton>) -> TFYChain<PlatformButton>) -> PlatformButton {
         #if os(iOS)
-        let button = UIButton(type: .system)
+        let button = UIButton(configuration: .plain())
         #elseif os(macOS)
         let button = NSButton()
         button.bezelStyle = .rounded
@@ -2584,6 +2637,15 @@ public extension UITableView {
 public extension UICollectionView {
     /// UICollectionView 类型安全链式容器
     var collectionChain: TFYChain<UICollectionView> { TFYChain(self) }
+}
+
+public extension TFYChain where T: UICollectionView {
+    /// Configures UICollectionView self-sizing invalidation (iOS 16+).
+    @discardableResult
+    func selfSizingInvalidation(_ invalidation: UICollectionView.SelfSizingInvalidation) -> TFYChain<T> {
+        base.selfSizingInvalidation = invalidation
+        return self
+    }
 }
 
 public extension UISwitch {
